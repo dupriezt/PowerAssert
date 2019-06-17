@@ -1,16 +1,16 @@
 Class {
-	#name : #MyTestCase,
+	#name : #PowerAssertExample,
 	#superclass : #TestCase,
 	#category : #PowerAssert
 }
 
 { #category : #running }
-MyTestCase >> runCaseManaged [
+PowerAssertExample >> runCaseManaged [
 	^ self runCase
 ]
 
 { #category : #tests }
-MyTestCase >> testPowerAssert [
+PowerAssertExample >> testPowerAssert [
 	| array |
 	array := { 2. 4. 6 }.
 	self powerAssert: [ (array at: 2) % 2 ~= 0 ].

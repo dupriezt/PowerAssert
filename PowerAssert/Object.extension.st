@@ -2,7 +2,7 @@ Extension { #name : #Object }
 
 { #category : #'*PowerAssert' }
 Object >> powerAssert: aBlock [
-	| dbg startContext stkSz argAsts astToValue statements node blockNode evalList |
+	| dbg startContext stkSz argAsts astToValue statements node blockNode evalList blockValue |
 	dbg := ScriptableDebugger debug: aBlock.
 	startContext := dbg context.
 	astToValue := Dictionary new.
@@ -26,9 +26,8 @@ Object >> powerAssert: aBlock [
 		].
 		dbg stepOver.
 	].
-	astToValue at: blockNode body children last put: (dbg context at: (dbg context size)).
-	evalList add: {blockNode body	children last.  dbg context at: (dbg context size)}.
-	"dbg inspect."
-	"astToValue inspect."
-	evalList inspect.
+	blockValue := dbg context at: (dbg context size).
+	astToValue at: blockNode body children last put: blockValue.
+	evalList add: {blockNode body	children last.  blockValue}.
+	[blockValue ifFalse: [self assert: false ]] on: Exception do: [:ex|  evalList inspect. ex pass.].
 ]
