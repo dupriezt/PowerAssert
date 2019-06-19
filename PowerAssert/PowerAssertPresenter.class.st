@@ -5,7 +5,12 @@ Class {
 		'expressionViewer',
 		'expressionEvaluationResult',
 		'powerAssertResult',
-		'executedBlock'
+		'executedBlock',
+		'inspector',
+		'inspectorLabel',
+		'leftSpacerForInspectorLabel',
+		'rightSpacerForInspectorLabel',
+		'topSpacerForInspectorLabel'
 	],
 	#classVars : [
 		'ExecutedBlock',
@@ -17,17 +22,40 @@ Class {
 { #category : #specs }
 PowerAssertPresenter class >> defaultSpec [
 
-	^ SpecPanedLayout newVertical
+"	^ SpecPanedLayout newVertical
 			add: #expressionViewer;
-			add: #expressionEvaluationResult;
-		yourself.
+			add: (SpecPanedLayout newVertical
+				add: #expressionEvaluationResult;
+				add: #inspector;
+				yourself);
+		yourself."
+		
+	^ SpecPanedLayout newVertical
+			add: (SpecPanedLayout newVertical
+				add: #expressionViewer;
+				add: #expressionEvaluationResult;
+				yourself);
+			add: (SpecBoxLayout newVertical
+				add: #topSpacerForInspectorLabel withConstraints: [:cstr | cstr height: 10];
+				add: (SpecBoxLayout newHorizontal
+					add: #leftSpacerForInspectorLabel;
+					add: #inspectorLabel withConstraints: [:cstr | cstr expand: false];
+					add: #rightSpacerForInspectorLabel;
+					yourself)
+					withConstraints: [:cstr | cstr expand: false];
+				add: #inspector;
+				yourself);
+			yourself.
 ]
 
 { #category : #'instance creation' }
 PowerAssertPresenter class >> openOn: powerAssertResult with: executedBlock [
+	| presenter |
 	PowerAssertResult := powerAssertResult.
 	ExecutedBlock := executedBlock.
-	self new openWithSpec.
+	presenter := self new openWithSpec.
+	presenter window extent: 400@600.
+	^ presenter.
 ]
 
 { #category : #accessing }
@@ -42,6 +70,13 @@ PowerAssertPresenter >> initializeWidgets [
 	powerAssertResult := PowerAssertResult.
 	executedBlock := ExecutedBlock.
 
+	inspector := StInspector on: (StInspectorModel on: nil).
+	
+	inspectorLabel := self newLabel label: 'Inspector'; emphasis: #bold.
+	leftSpacerForInspectorLabel := SpacerPresenter new.
+	rightSpacerForInspectorLabel := SpacerPresenter new.
+	topSpacerForInspectorLabel := SpacerPresenter new.
+
 	expressionViewer := self newText
 		text: executedBlock sourceNode formattedCode;
 		enabled: false.
@@ -54,6 +89,9 @@ PowerAssertPresenter >> initializeWidgets [
 		addColumn: (StringTableColumn title: 'Value' evaluated: [:obj | obj at: 2]);
 		items: powerAssertResult;
 		whenSelectionChangedDo: [:selection |
+				inspectorLabel label: 'Inspecting: ', (selection selectedItem at: 2) asString.
+				inspector model inspectedObject: (selection selectedItem at: 2).
+				inspector refresh.
 				node := selection selectedItem at: 1.
 				blockNode := executedBlock sourceNode.
 				startStyle := node start - blockNode start.
