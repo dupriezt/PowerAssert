@@ -2,6 +2,7 @@ Extension { #name : #Object }
 
 { #category : #'*PowerAssert' }
 Object >> powerAssert: aBlock [
+	<debuggerCompleteToSender>
 	| dbg startContext stkSz argAsts blockNode evalList blockValue |
 	dbg := ScriptableDebugger debug: aBlock.
 	startContext := dbg context.
@@ -24,5 +25,5 @@ Object >> powerAssert: aBlock [
 	].
 	blockValue := dbg context at: (dbg context size).
 	evalList add: {blockNode body	children last.  blockValue}.
-	[blockValue ifFalse: [self assert: false ]] on: Exception do: [:ex|  evalList inspect. ex pass.].
+	blockValue ifFalse: [evalList inspect. self assert: false ].
 ]
