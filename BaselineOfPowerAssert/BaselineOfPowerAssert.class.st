@@ -13,7 +13,11 @@ BaselineOfPowerAssert >> baseline: spec [
 			"Dependencies"
 			spec
 				baseline: 'ScriptableDebugger'
-				with: [spec repository: 'github://dupriezt/ScriptableDebugger']. 
+				with: [spec repository: 'github://dupriezt/ScriptableDebugger'].
+			spec baseline: 'NewTools' with: [
+				spec
+					repository: 'github://pharo-spec/NewTools/tree/master/src'.
+			].
 			"Packages"	
 			spec
 				package: 'PowerAssert'.
