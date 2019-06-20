@@ -27,5 +27,5 @@ PowerAssertExample >> testPowerAssert2 [
 
 { #category : #tests }
 PowerAssertExample >> testPowerAssert3 [
-	self powerAssert: [ Point x:5 y:6 ].
+	self powerAssert: [ Point x: 5 y:6 ].
 ]

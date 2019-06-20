@@ -98,7 +98,7 @@ PowerAssertPresenter >> initializeWidgets [
 				startStyle := node start - blockNode start.
 				stopStyle := node stop - blockNode start.
 				styleLength := stopStyle - startStyle + 1.
-				string := executedBlock sourceNode formattedCode.
+				string := executedBlock sourceNode sourceCode.
 				text := '' asText.
 				text := text, (string first: startStyle) asText. "Left part. Unstyled"
 				string := string last: string size - startStyle.
