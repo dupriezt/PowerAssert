@@ -92,6 +92,7 @@ PowerAssertPresenter >> initializeWidgets [
 				inspectorLabel label: 'Inspecting: ', (selection selectedItem at: 2) asString.
 				inspector model inspectedObject: (selection selectedItem at: 2).
 				inspector refresh.
+				inspector initialize. "Necessary hack for the inspector to actually refresh, until its #refresh method actually works"
 				node := selection selectedItem at: 1.
 				blockNode := executedBlock sourceNode.
 				startStyle := node start - blockNode start.
