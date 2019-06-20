@@ -19,7 +19,11 @@ Object >> powerAssert: aBlock [
 				]
 			].
 		] ifFalse: [
-			dbg currentNode isBlock ifFalse: [ self error: 'Not Message/Block Node']
+			dbg currentNode isAssignment ifTrue: [ 
+				evalList add: { dbg currentNode. (dbg context at: dbg context size) copy }.
+			] ifFalse: [ 
+				dbg currentNode isBlock ifFalse: [ self error: 'Not Message/Assignment/Block Node']
+			]
 		].
 		dbg stepOver.
 	].
