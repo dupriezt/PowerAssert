@@ -3,7 +3,7 @@ Extension { #name : #Object }
 { #category : #'*PowerAssert' }
 Object >> powerAssert: aBlock [
 	<debuggerCompleteToSender>
-	| dbg startContext stkSz argAsts blockNode evalList blockValue |
+	| dbg startContext stkSz argAsts blockNode evalList blockValue testResult |
 	dbg := ScriptableDebugger debug: aBlock.
 	startContext := dbg context.
 	blockNode := startContext closure sourceNode.
@@ -29,5 +29,7 @@ Object >> powerAssert: aBlock [
 	].
 	blockValue := dbg context at: (dbg context size).
 	evalList add: {blockNode body	children last.  blockValue copy}.
-	blockValue ifFalse: [PowerAssertPresenter openOn: evalList with: aBlock. "evalList inspect." self assert: false ].
+	testResult := false.
+	[blockValue ifTrue: [ testResult := true ]] on: MessageNotUnderstood do: [1].
+	testResult ifFalse: [PowerAssertPresenter openOn: evalList with: aBlock. "evalList inspect." self assert: false ].
 ]

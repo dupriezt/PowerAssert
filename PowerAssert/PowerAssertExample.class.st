@@ -24,3 +24,8 @@ PowerAssertExample >> testPowerAssert2 [
 	result := 0.
 	self powerAssert: [ 1 to: input1 size do: [:i | result := result + (input1 at: i) - (input2 at: i)]. result = 2 ].
 ]
+
+{ #category : #tests }
+PowerAssertExample >> testPowerAssert3 [
+	self powerAssert: [ Point x:5 y:6 ].
+]
