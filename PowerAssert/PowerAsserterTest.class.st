@@ -30,6 +30,11 @@ PowerAsserterTest >> exampleNumberToDo [
 	^ [ 1 to: 3 do: [:i | Point x: i y: 2*i ] ]
 ]
 
+{ #category : #tests }
+PowerAsserterTest >> exampleStatements [
+	^ [ Point x:1 y:2. Point x:3 y:4 ]
+]
+
 { #category : #'as yet unclassified' }
 PowerAsserterTest >> exampleYadriggy [
 	| array |
@@ -80,6 +85,12 @@ PowerAsserterTest >> testToDo [
 ]
 
 { #category : #tests }
+PowerAsserterTest >> test_bytecodeOf_exampleEvaluateBlock [
+	(OpalCompiler new compile: 'DoIt
+	^ [ self evalBlock: [ Point x:3 y:5 ] ]') inspect
+]
+
+{ #category : #tests }
 PowerAsserterTest >> test_firstImplementation_evaluateBlock [
 	pAsserter firstImplementation: self exampleEvaluateBlock.
 ]
@@ -92,6 +103,11 @@ PowerAsserterTest >> test_firstImplementation_ifTrueIfFalse [
 { #category : #tests }
 PowerAsserterTest >> test_firstImplementation_numberToDo [
 	pAsserter firstImplementation: self exampleNumberToDo.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_firstImplementation_statements [
+	pAsserter firstImplementation: self exampleStatements.
 ]
 
 { #category : #tests }
@@ -133,6 +149,17 @@ PowerAsserterTest >> test_recordAST_numberToDo_stepOver [
 ]
 
 { #category : #tests }
+PowerAsserterTest >> test_recordAST_statements_basicStepOver [
+	pAsserter useBasicStepOver: true.
+	pAsserter evaluateAndShowEncounteredASTNodeOf: self exampleStatements.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_recordAST_statments_stepOver [
+	pAsserter evaluateAndShowEncounteredASTNodeOf: self exampleStatements.
+]
+
+{ #category : #tests }
 PowerAsserterTest >> test_recordAST_yadriggyExample_basicStepOver [
 	| array |
 	array := { 2. 4. 6 }.
@@ -145,6 +172,31 @@ PowerAsserterTest >> test_recordAST_yadriggyExample_stepOver [
 	| array |
 	array := { 2. 4. 6 }.
 	pAsserter evaluateAndShowEncounteredASTNodeOf: self exampleYadriggy.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_secondImplementation_evaluateBlock [
+	pAsserter secondImplementation: self exampleEvaluateBlock.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_secondImplementation_ifTrueIfFalse [
+	pAsserter secondImplementation: self exampleIfTrueIfFalse.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_secondImplementation_numberToDo [
+	pAsserter secondImplementation: self exampleNumberToDo.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_secondImplementation_statements [
+	pAsserter secondImplementation: self exampleStatements.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_secondImplementation_yadriggy [
+	pAsserter secondImplementation: self exampleYadriggy.
 ]
 
 { #category : #tests }

@@ -93,6 +93,20 @@ PowerAsserter >> recordEvaluationOf: aBlock [
 	^ evaluationData.
 ]
 
+{ #category : #asserting }
+PowerAsserter >> secondImplementation: aBlock [
+	| dbg blockNode evaluationData node |
+	dbg := ScriptableDebugger debug: aBlock.
+	blockNode := dbg context closure sourceNode.
+	evaluationData := OrderedCollection new.
+	[ dbg currentNode == blockNode ] whileFalse: [
+		node := dbg currentNode.
+		dbg stepOverBasic.
+		evaluationData add: { node. dbg context top }.
+	].
+	^ PowerAssertPresenter openOn: evaluationData with: aBlock  
+]
+
 { #category : #'as yet unclassified' }
 PowerAsserter >> switch: aCollection else: aBlock [
 	"Switch case. Expects aCollection to be of the form: {{conditionBlock1. statementBlock1}. {conditionBlock2. statementBlock2}. ...}"
