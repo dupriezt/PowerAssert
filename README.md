@@ -32,5 +32,7 @@ Metacello new
     load.
 ```
 
-## Restrictions
-Some compilation optimisations throw off powerassert, giving strange results. For example, the `Number>>#to:do:` method (it is inlined by the compiler).
+## Restrictions and Notes
+- Some compilation optimisations throw off powerassert, giving strange results. For example, the `Number>>#to:do:` method (it is inlined by the compiler).
+- The tests on the PowerAssertExamples class give the expected results, and can be used for demonstration
+- The tests on the PowerAssertTest class may fail
