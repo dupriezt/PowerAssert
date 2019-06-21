@@ -10,6 +10,11 @@ PowerAssertTest >> runCaseManaged [
 ]
 
 { #category : #tests }
+PowerAssertTest >> test2 [
+	self powerAssert: [ 1 to: 5 do: [:i | Point new ] ] testMode: true.
+]
+
+{ #category : #tests }
 PowerAssertTest >> testNonBooleanResult [
 	| res |
 	res := self powerAssert: [ Point x:5 y:6 ] testMode: true.

@@ -66,7 +66,7 @@ PowerAssertPresenter >> executedBlock: aValue [
 { #category : #initialization }
 PowerAssertPresenter >> initializeWidgets [
 	"initialise instance variables according to the values of the class variables"
-	| text string node blockNode startStyle stopStyle styleLength stringToStyle |
+	| text string node blockNode startStyle stopStyle styleLength stringToStyle previousRaiseWarningValue |
 	powerAssertResult := PowerAssertResult.
 	executedBlock := ExecutedBlock.
 
@@ -90,9 +90,12 @@ PowerAssertPresenter >> initializeWidgets [
 		items: powerAssertResult;
 		whenSelectionChangedDo: [:selection |
 				inspectorLabel label: 'Inspecting: ', (selection selectedItem at: 2) asString.
+				previousRaiseWarningValue := Deprecation raiseWarning.
+				Deprecation raiseWarning: false. "Prevents deprecation windows popping up for the inspector whenever a new object is selected in the list"
 				inspector model inspectedObject: (selection selectedItem at: 2).
 				inspector refresh.
 				inspector initialize. "Necessary hack for the inspector to actually refresh, until its #refresh method actually works"
+				Deprecation raiseWarning: previousRaiseWarningValue. "Resets this setting value to what it was before"
 				node := selection selectedItem at: 1.
 				blockNode := executedBlock sourceNode.
 				startStyle := node start - blockNode start.
