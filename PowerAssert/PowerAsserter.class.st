@@ -1,6 +1,9 @@
 Class {
 	#name : #PowerAsserter,
 	#superclass : #Object,
+	#instVars : [
+		'useBasicStepOver'
+	],
 	#category : #PowerAssert
 }
 
@@ -29,6 +32,82 @@ PowerAsserter >> assert: aBlock description: aStringOrBlock testMode: aBoolean [
 ]
 
 { #category : #asserting }
+PowerAsserter >> assert: aBlock testMode: aBoolean [
+	^ self assert: aBlock description: 'PowerAssertion failed' testMode: aBoolean.
+]
+
+{ #category : #asserting }
+PowerAsserter >> evaluateAndShowEncounteredASTNodeOf: aBlock [
+	PowerAssertPresenter openOn: (self recordEncounteredASTNodesOf: aBlock) with: aBlock.
+	
+]
+
+{ #category : #asserting }
+PowerAsserter >> firstImplementation: aBlock [
+	| dbg blockNode evaluationData node |
+	dbg := ScriptableDebugger debug: aBlock.
+	blockNode := dbg context closure sourceNode.
+	evaluationData := OrderedCollection new.
+	[ dbg currentNode == blockNode ] whileFalse: [
+		node := dbg currentNode.
+		dbg stepOver.
+		evaluationData add: { node. dbg context top }.
+	].
+	^ PowerAssertPresenter openOn: evaluationData with: aBlock  
+]
+
+{ #category : #initialization }
+PowerAsserter >> initialize [
+	useBasicStepOver := false
+]
+
+{ #category : #asserting }
+PowerAsserter >> recordEncounteredASTNodesOf: aBlock [
+	"Evaluate aBlock step-by-step. Record only the AST nodes that are encountered (not their value)"
+	| dbg evaluationData blockNode |
+	dbg := ScriptableDebugger debug: aBlock.
+	evaluationData := OrderedCollection new.
+	blockNode := dbg context closure sourceNode.
+
+	[dbg currentNode == blockNode] whileFalse: [
+		evaluationData add: {dbg currentNode.nil}. useBasicStepOver ifTrue: [dbg stepOverBasic] ifFalse: [dbg stepOver].
+	].
+	^ evaluationData.
+]
+
+{ #category : #asserting }
 PowerAsserter >> recordEvaluationOf: aBlock [
-	self shouldBeImplemented.
+	| dbg evaluationData blockNode node |
+	dbg := ScriptableDebugger debug: aBlock.
+	evaluationData := OrderedCollection new.
+	blockNode := dbg context closure sourceNode.
+
+	[dbg currentNode == blockNode] whileFalse: [
+		">"evaluationData add: {dbg currentNode.1}. dbg stepOverBasic.
+		"self switch: { 
+			{ [dbg currentNode isKindOf: RBTemporaryNode]. [ node := dbg currentNode. dbg stepOverBasic. evaluationData add: {node. dbg context top}] }
+		} else: [ self error: 'Unrecognised node' ]."
+		"dbg stepOverBasic."
+	].
+	">" evaluationData add: { 1. false }.
+	^ evaluationData.
+]
+
+{ #category : #'as yet unclassified' }
+PowerAsserter >> switch: aCollection else: aBlock [
+	"Switch case. Expects aCollection to be of the form: {{conditionBlock1. statementBlock1}. {conditionBlock2. statementBlock2}. ...}"
+	aCollection do: [ :item |
+		(item at: 1) value ifTrue: [ (item at: 2) value. ^ self ]
+	].
+	aBlock value.
+]
+
+{ #category : #accessing }
+PowerAsserter >> useBasicStepOver [
+	^ useBasicStepOver
+]
+
+{ #category : #accessing }
+PowerAsserter >> useBasicStepOver: anObject [
+	useBasicStepOver := anObject
 ]

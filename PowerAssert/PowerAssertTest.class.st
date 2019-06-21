@@ -37,7 +37,7 @@ PowerAssertTest >> testToDo [
 PowerAssertTest >> testifTrueIfFalse [
 	| flag array |
 	flag := true.
-	array := { 2 . 4 }.
+	array := { 2.4 }.
 	"Works but powerassert misses the 'flag' node, probably because of a compilation optimisation of ifTrue:ifFalse:"
-	self powerAssert: [ (flag ifTrue: [ array at: 1 ] ifFalse: [ array at: 2 ]) = 4].
+	self powerAssert: [ (flag ifTrue: [ array at: 1] ifFalse: [ array at: 2 ]) = 4].
 ]
