@@ -15,6 +15,9 @@ But more interestingly, another window opens, showing you the details of the com
 ![image](https://user-images.githubusercontent.com/32486709/59906653-8ba56680-9409-11e9-83d1-246ad158ee81.png)
 
 
+![image](https://user-images.githubusercontent.com/32486709/59906941-328a0280-940a-11e9-9aec-345d55fc0273.png)
+
+
 ## Installation
 ```Smalltalk
 Metacello new
