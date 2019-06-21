@@ -10,11 +10,6 @@ PowerAssertTest >> runCaseManaged [
 ]
 
 { #category : #tests }
-PowerAssertTest >> test2 [
-	self powerAssert: [ 1 to: 5 do: [:i | Point new ] ] testMode: true.
-]
-
-{ #category : #tests }
 PowerAssertTest >> testNonBooleanResult [
 	| res |
 	res := self powerAssert: [ Point x:5 y:6 ] testMode: true.
@@ -31,4 +26,18 @@ PowerAssertTest >> testPowerAssert2 [
 	input2 := { 1. 2. 4. 8. 16. 32 }.
 	result := 0.
 	self powerAssert: [ 1 to: input1 size do: [:i | result := result + (input1 at: i) - (input2 at: i)]. result = 2 ].
+]
+
+{ #category : #tests }
+PowerAssertTest >> testToDo [
+	self powerAssert: [ 1 to: 5 do: [:i | Point new ] ] testMode: true.
+]
+
+{ #category : #tests }
+PowerAssertTest >> testifTrueIfFalse [
+	| flag array |
+	flag := true.
+	array := { 2 . 4 }.
+	"Works but powerassert misses the 'flag' node, probably because of a compilation optimisation of ifTrue:ifFalse:"
+	self powerAssert: [ (flag ifTrue: [ array at: 1 ] ifFalse: [ array at: 2 ]) = 4].
 ]
