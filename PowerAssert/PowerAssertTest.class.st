@@ -23,3 +23,12 @@ PowerAssertTest >> testNonBooleanResult [
 	self assert: ((res at: 3) at: 2) equals: 6.
 	self assert: (((res at: 4) at: 2) isKindOf: Point).
 ]
+
+{ #category : #tests }
+PowerAssertTest >> testPowerAssert2 [
+	| input1 input2 result |
+	input1 := { 1. 3. 9. 27. 81. 243}.
+	input2 := { 1. 2. 4. 8. 16. 32 }.
+	result := 0.
+	self powerAssert: [ 1 to: input1 size do: [:i | result := result + (input1 at: i) - (input2 at: i)]. result = 2 ].
+]
