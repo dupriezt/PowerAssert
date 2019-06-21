@@ -31,3 +31,6 @@ Metacello new
     repository: 'github://dupriezt/PowerAssert';
     load.
 ```
+
+## Restrictions
+Some compilation optimisations throw off powerassert, giving strange results. For example, the `Number>>#to:do:` method (it is inlined by the compiler).
