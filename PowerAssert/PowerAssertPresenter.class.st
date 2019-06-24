@@ -110,8 +110,8 @@ PowerAssertPresenter >> initializeWidgets [
 				text := text, (string last: string size - styleLength). "Right part. Unstyled"
 				expressionViewer text: ''.
 				expressionViewer text: text.
-		];
-		selectIndex: 1.
+		].
+	(expressionEvaluationResult items isEmpty) ifFalse: [expressionEvaluationResult selectIndex: 1].
 ]
 
 { #category : #accessing }

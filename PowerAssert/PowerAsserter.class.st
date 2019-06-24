@@ -2,7 +2,9 @@ Class {
 	#name : #PowerAsserter,
 	#superclass : #Object,
 	#instVars : [
-		'useBasicStepOver'
+		'recordingMethodName',
+		'evaluationData',
+		'evaluatedBlock'
 	],
 	#category : #PowerAssert
 }
@@ -19,14 +21,15 @@ PowerAsserter >> assert: aBlock description: aStringOrBlock [
 
 { #category : #asserting }
 PowerAsserter >> assert: aBlock description: aStringOrBlock testMode: aBoolean [
-	| testMode evaluationData assertionSuccess |
+	| testMode assertionSuccess |
 	testMode := aBoolean. "If true, this method will simply return the evaluation data so that it can be tested. Otherwise, opens a PowerAssertPresenter to show the evaluation data and signal an AssertionFailure"
-	evaluationData := self recordEvaluationOf: aBlock.
+"	evaluationData := self recordEvaluationOf: aBlock."
+	self evaluateAndRecord: aBlock.
 	assertionSuccess := false.
 	[(evaluationData last at: 2) ifTrue: [ assertionSuccess := true ]] on: MessageNotUnderstood do: [ 1. "just catch the exception and do nothing. This is in case the result of the asserted block does not understand the #ifTrue: message" ].
 	assertionSuccess ifFalse: [
 		testMode ifTrue: [ ^ evaluationData ].
-		PowerAssertPresenter openOn: evaluationData with: aBlock.
+		self showEvaluationData.
 		AssertionFailure signal: aStringOrBlock value
 	]
 ]
@@ -36,92 +39,98 @@ PowerAsserter >> assert: aBlock testMode: aBoolean [
 	^ self assert: aBlock description: 'PowerAssertion failed' testMode: aBoolean.
 ]
 
-{ #category : #asserting }
-PowerAsserter >> evaluateAndShowEncounteredASTNodeOf: aBlock [
-	PowerAssertPresenter openOn: (self recordEncounteredASTNodesOf: aBlock) with: aBlock.
-	
+{ #category : #'as yet unclassified' }
+PowerAsserter >> evaluateAndRecord: aBlock [
+	evaluatedBlock := aBlock.
+	evaluationData := self perform: recordingMethodName with: aBlock.
 ]
 
-{ #category : #asserting }
-PowerAsserter >> firstImplementation: aBlock [
-	| dbg blockNode evaluationData node |
-	dbg := ScriptableDebugger debug: aBlock.
-	blockNode := dbg context closure sourceNode.
-	evaluationData := OrderedCollection new.
-	[ dbg currentNode == blockNode ] whileFalse: [
-		node := dbg currentNode.
-		dbg stepOver.
-		evaluationData add: { node. dbg context top }.
-	].
-	^ PowerAssertPresenter openOn: evaluationData with: aBlock  
+{ #category : #accessing }
+PowerAsserter >> evaluationData [
+	^ evaluationData
 ]
 
 { #category : #initialization }
 PowerAsserter >> initialize [
-	useBasicStepOver := false
+	recordingMethodName := #recordEvaluationOf_stepOverAST:
 ]
 
-{ #category : #asserting }
-PowerAsserter >> recordEncounteredASTNodesOf: aBlock [
-	"Evaluate aBlock step-by-step. Record only the AST nodes that are encountered (not their value)"
-	| dbg evaluationData blockNode |
+{ #category : #recordingMethods }
+PowerAsserter >> recordEvaluationOf_componentApproach: aBlock [
+	| dbg evaluationData_ blockNode stkSz argAsts blockValue |
 	dbg := ScriptableDebugger debug: aBlock.
-	evaluationData := OrderedCollection new.
+	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
 
-	[dbg currentNode == blockNode] whileFalse: [
-		evaluationData add: {dbg currentNode.nil}. useBasicStepOver ifTrue: [dbg stepOverBasic] ifFalse: [dbg stepOver].
+	[ dbg currentNode == blockNode ] whileFalse: [
+		dbg currentNode isMessage ifTrue: [
+			stkSz := dbg context size.
+			argAsts := dbg currentNode arguments.
+			evaluationData_ add: { dbg currentNode receiver. (dbg context at: (stkSz - argAsts size)) copy }.
+			(dbg currentNode arguments isEmpty) ifFalse: [
+				1 to: argAsts size do: [ :i |
+					evaluationData_ add: { (argAsts at: i). (dbg context at: (stkSz - argAsts size + i)) copy }
+				]
+			].
+		] ifFalse: [
+			dbg currentNode isAssignment ifTrue: [ 
+				evaluationData_ add: { dbg currentNode. (dbg context at: dbg context size) copy }.
+			] ifFalse: [ 
+				dbg currentNode isBlock ifFalse: [ self error: 'Not Message/Assignment/Block Node']
+			]
+		].
+		dbg stepOver.
 	].
-	^ evaluationData.
+	blockValue := dbg context at: (dbg context size).
+	evaluationData_ add: {blockNode body	children last.  blockValue copy}.
+	^ evaluationData_.
 ]
 
-{ #category : #asserting }
-PowerAsserter >> recordEvaluationOf: aBlock [
-	| dbg evaluationData blockNode node |
+{ #category : #recordingMethods }
+PowerAsserter >> recordEvaluationOf_stepOver: aBlock [
+	| dbg evaluationData_ blockNode node |
 	dbg := ScriptableDebugger debug: aBlock.
-	evaluationData := OrderedCollection new.
+	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
 
 	[dbg currentNode == blockNode] whileFalse: [
-		">"evaluationData add: {dbg currentNode.1}. dbg stepOverBasic.
+		node := dbg currentNode.
+		dbg stepOver.
+		evaluationData_ add: {node.dbg context top}.
 		"self switch: { 
 			{ [dbg currentNode isKindOf: RBTemporaryNode]. [ node := dbg currentNode. dbg stepOverBasic. evaluationData add: {node. dbg context top}] }
 		} else: [ self error: 'Unrecognised node' ]."
 		"dbg stepOverBasic."
 	].
-	">" evaluationData add: { 1. false }.
-	^ evaluationData.
+	^ evaluationData_.
 ]
 
-{ #category : #asserting }
-PowerAsserter >> secondImplementation: aBlock [
-	| dbg blockNode evaluationData node |
-	dbg := ScriptableDebugger debug: aBlock.
+{ #category : #recordingMethods }
+PowerAsserter >> recordEvaluationOf_stepOverAST: aBlock [
+	| dbg evaluationData_ blockNode node |
+	dbg := ScriptableDebugger debugAST: aBlock.
+	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
-	evaluationData := OrderedCollection new.
-	[ dbg currentNode == blockNode ] whileFalse: [
+
+	[dbg currentNode == blockNode] whileFalse: [
 		node := dbg currentNode.
-		dbg stepOverBasic.
-		evaluationData add: { node. dbg context top }.
+		dbg stepOverAST.
+		evaluationData_ add: {node. dbg context top}. 
 	].
-	^ PowerAssertPresenter openOn: evaluationData with: aBlock  
-]
-
-{ #category : #'as yet unclassified' }
-PowerAsserter >> switch: aCollection else: aBlock [
-	"Switch case. Expects aCollection to be of the form: {{conditionBlock1. statementBlock1}. {conditionBlock2. statementBlock2}. ...}"
-	aCollection do: [ :item |
-		(item at: 1) value ifTrue: [ (item at: 2) value. ^ self ]
-	].
-	aBlock value.
+	^ evaluationData_.
 ]
 
 { #category : #accessing }
-PowerAsserter >> useBasicStepOver [
-	^ useBasicStepOver
+PowerAsserter >> recordingMethodName [
+	^ recordingMethodName
 ]
 
 { #category : #accessing }
-PowerAsserter >> useBasicStepOver: anObject [
-	useBasicStepOver := anObject
+PowerAsserter >> recordingMethodName: anObject [
+	recordingMethodName := anObject
+]
+
+{ #category : #accessing }
+PowerAsserter >> showEvaluationData [
+	PowerAssertPresenter openOn: evaluationData with: evaluatedBlock.
 ]
