@@ -75,7 +75,7 @@ PowerAssertPresenter >> executedBlock: aValue [
 
 { #category : #initialization }
 PowerAssertPresenter >> highlightColour [
-	^ Color yellow
+	^ UITheme current caretColor.
 ]
 
 { #category : #initialization }
