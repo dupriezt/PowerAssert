@@ -74,6 +74,11 @@ PowerAssertPresenter >> executedBlock: aValue [
 ]
 
 { #category : #initialization }
+PowerAssertPresenter >> highlightColour [
+	^ Color yellow
+]
+
+{ #category : #initialization }
 PowerAssertPresenter >> initializeWidgets [
 	"initialise instance variables according to the values of the class variables"
 	| text string node blockNode startStyle stopStyle styleLength stringToStyle previousRaiseWarningValue |
@@ -117,7 +122,7 @@ PowerAssertPresenter >> initializeWidgets [
 				text := text, (string first: startStyle) asText. "Left part. Unstyled"
 				string := string last: string size - startStyle.
 				stringToStyle := (string first: styleLength). "Middle part. To be styled"
-				text := text, (stringToStyle asText makeAllColor: Color yellow; addAttribute: TextEmphasis underlined from: 1 to: stringToStyle size).
+				text := text, (stringToStyle asText makeAllColor: self highlightColour; addAttribute: TextEmphasis underlined from: 1 to: stringToStyle size).
 				text := text, (string last: string size - styleLength). "Right part. Unstyled"
 				expressionViewer text: ''.
 				expressionViewer text: text.
