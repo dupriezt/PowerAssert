@@ -31,6 +31,13 @@ PowerAsserterTest >> exampleNumberToDo [
 ]
 
 { #category : #example }
+PowerAsserterTest >> exampleRandom [
+	| array |
+	array := { 0. 1. 2. 4 }.
+	^ [ 60 / (array at: 4 atRandom) ]
+]
+
+{ #category : #example }
 PowerAsserterTest >> exampleStatements [
 	^ [ Point x:1 y:2. Point x:3 y:4 ]
 ]
@@ -131,6 +138,15 @@ PowerAsserterTest >> test_numberToDo_stepOverAST [
 	"Incorrect. The end check of the recording method (dbg currentNode == blockNode) is true immediately, so no recording happen. The first encountered bytecode is '61 <73>, pushConstant: nil', and its associated source node is the entire block for some reason"
 	pAsserter recordingMethodName: #recordEvaluationOf_stepOverAST:.
 	pAsserter evaluateAndRecord: self exampleNumberToDo.
+	pAsserter showEvaluationData.
+]
+
+{ #category : #tests }
+PowerAsserterTest >> test_randomExample_stepOverAST [
+	"Not a real test"
+
+	pAsserter recordingMethodName: #recordEvaluationOf_stepOverAST:.
+	pAsserter evaluateAndRecord: self exampleRandom.
 	pAsserter showEvaluationData.
 ]
 

@@ -15,6 +15,7 @@ DebugSessionPlus >> stepAST: aContext [
 	(self isContextPostMortem: aContext) ifTrue: [^ self].
 
 	currentNode := interruptedProcess suspendedContext sourceNode.
+
 	[interruptedProcess suspendedContext sourceNode == currentNode] whileTrue: [interruptedProcess step: aContext].
 	self updateContextTo: interruptedProcess suspendedContext.
 	"self updateContextTo: (self stepToFirstInterestingBytecodeIn: interruptedProcess)."
@@ -31,6 +32,7 @@ DebugSessionPlus >> stepOverAST [
 DebugSessionPlus >> stepOverAST: aContext [
 	"Same as step over, but instead of then stepping to the next interesting bytecode, step until the current ast node is different."
 	| newContext astNodeGetter previousASTNode |
+
 	"Should not step more a process that is terminating, otherwise the image will get locked."
 	self interruptedProcess isTerminating ifTrue: [ SteppingATerminatingProcess signal ].
 

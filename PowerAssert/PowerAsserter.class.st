@@ -43,6 +43,7 @@ PowerAsserter >> assert: aBlock testMode: aBoolean [
 PowerAsserter >> evaluateAndRecord: aBlock [
 	evaluatedBlock := aBlock.
 	evaluationData := self perform: recordingMethodName with: aBlock.
+	evaluationData := evaluationData collect: [ :item | item asOrderedCollection add: false; yourself ].
 ]
 
 { #category : #accessing }
@@ -107,14 +108,16 @@ PowerAsserter >> recordEvaluationOf_stepOver: aBlock [
 
 { #category : #recordingMethods }
 PowerAsserter >> recordEvaluationOf_stepOverAST: aBlock [
-	| dbg evaluationData_ blockNode node |
+	| dbg evaluationData_ blockNode node blockContext |
 	dbg := ScriptableDebugger debugAST: aBlock.
 	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
-
+	blockContext:= dbg context.
+	
 	[dbg currentNode == blockNode] whileFalse: [
 		node := dbg currentNode.
 		dbg stepOverAST.
+		"(dbg context ~= blockContext ) ifTrue: [ self halt ]."
 		evaluationData_ add: {node. dbg context top}. 
 	].
 	^ evaluationData_.

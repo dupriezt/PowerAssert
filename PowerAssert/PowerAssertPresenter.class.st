@@ -4,13 +4,13 @@ Class {
 	#instVars : [
 		'expressionViewer',
 		'expressionEvaluationResult',
-		'powerAssertResult',
 		'executedBlock',
 		'inspector',
 		'inspectorLabel',
 		'leftSpacerForInspectorLabel',
 		'rightSpacerForInspectorLabel',
-		'topSpacerForInspectorLabel'
+		'topSpacerForInspectorLabel',
+		'evaluationData'
 	],
 	#classVars : [
 		'ExecutedBlock',
@@ -59,6 +59,16 @@ PowerAssertPresenter class >> openOn: powerAssertResult with: executedBlock [
 ]
 
 { #category : #accessing }
+PowerAssertPresenter >> evaluationdata [
+	^ evaluationData.
+]
+
+{ #category : #accessing }
+PowerAssertPresenter >> evaluationdata: aValue [
+	evaluationData := aValue.
+]
+
+{ #category : #accessing }
 PowerAssertPresenter >> executedBlock: aValue [
 	executedBlock := aValue
 ]
@@ -67,7 +77,7 @@ PowerAssertPresenter >> executedBlock: aValue [
 PowerAssertPresenter >> initializeWidgets [
 	"initialise instance variables according to the values of the class variables"
 	| text string node blockNode startStyle stopStyle styleLength stringToStyle previousRaiseWarningValue |
-	powerAssertResult := PowerAssertResult.
+	evaluationData := PowerAssertResult.
 	executedBlock := ExecutedBlock.
 
 	inspector := StInspector on: (StInspectorModel on: nil).
@@ -87,7 +97,8 @@ PowerAssertPresenter >> initializeWidgets [
 		addColumn: ((IndexTableColumn title: 'Eval Order') width: 70);
 		addColumn: (StringTableColumn title: 'AST Node' evaluated: [:obj | obj at: 1]);
 		addColumn: (StringTableColumn title: 'Value' evaluated: [:obj | obj at: 2]);
-		items: powerAssertResult;
+		addColumn: (CheckBoxTableColumn title: 'replay' evaluated: [:obj | obj at: 3]);
+		items: evaluationData;
 		whenSelectionChangedDo: [:selection |
 				inspectorLabel label: 'Inspecting: ', (selection selectedItem at: 2) asString.
 				previousRaiseWarningValue := Deprecation raiseWarning.
@@ -112,11 +123,6 @@ PowerAssertPresenter >> initializeWidgets [
 				expressionViewer text: text.
 		].
 	(expressionEvaluationResult items isEmpty) ifFalse: [expressionEvaluationResult selectIndex: 1].
-]
-
-{ #category : #accessing }
-PowerAssertPresenter >> powerAssertResult: aValue [
-	powerAssertResult := aValue.
 ]
 
 { #category : #TOREMOVE }
