@@ -83,7 +83,7 @@ PowerAsserterTest >> test_evaluateBlock_stepOverAST [
 { #category : #tests }
 PowerAsserterTest >> test_ifTrueIfFalse_componentApproach [
 	"Not a real test"
-	"Incorrect. The array temp is recorded. The flag temp is not recorded. The = message-send is recorded."
+	"Incorrect. The array temp is recorded. The flag temp is not recorded. The = message-send is recorded. The ifTrue:ifFalse: message-send is not recorded. The execution of the true block is recorded, but shouldn't"
 	pAsserter recordingMethodName: #recordEvaluationOf_componentApproach:.
 	pAsserter evaluateAndRecord: self exampleIfTrueIfFalse.
 	pAsserter showEvaluationData.
