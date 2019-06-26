@@ -10,7 +10,8 @@ Class {
 		'leftSpacerForInspectorLabel',
 		'rightSpacerForInspectorLabel',
 		'topSpacerForInspectorLabel',
-		'evaluationData'
+		'evaluationData',
+		'replayButton'
 	],
 	#classVars : [
 		'ExecutedBlock',
@@ -36,6 +37,7 @@ PowerAssertPresenter class >> defaultSpec [
 				add: #expressionEvaluationResult;
 				yourself);
 			add: (SpBoxLayout newVertical
+				add: #replayButton;
 				add: #topSpacerForInspectorLabel withConstraints: [:cstr | cstr height: 10];
 				add: (SpBoxLayout newHorizontal
 					add: #leftSpacerForInspectorLabel;
@@ -128,6 +130,13 @@ PowerAssertPresenter >> initializeWidgets [
 				expressionViewer text: text.
 		].
 	(expressionEvaluationResult items isEmpty) ifFalse: [expressionEvaluationResult selectIndex: 1].
+	
+	replayButton := self newButton
+		label: 'Replay';
+		action: [ 
+			PowerAssertReplayer openOnBlock: executedBlock withReplayEvaluationData: evaluationData. 
+		];
+		yourself.
 ]
 
 { #category : #TOREMOVE }
