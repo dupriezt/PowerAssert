@@ -1,6 +1,6 @@
 Class {
 	#name : #PowerAssertPresenter,
-	#superclass : #ComposablePresenter,
+	#superclass : #SpPresenter,
 	#instVars : [
 		'expressionViewer',
 		'expressionEvaluationResult',
@@ -30,14 +30,14 @@ PowerAssertPresenter class >> defaultSpec [
 				yourself);
 		yourself."
 		
-	^ SpecPanedLayout newVertical
-			add: (SpecPanedLayout newVertical
+	^ SpPanedLayout newVertical
+			add: (SpPanedLayout newVertical
 				add: #expressionViewer;
 				add: #expressionEvaluationResult;
 				yourself);
-			add: (SpecBoxLayout newVertical
+			add: (SpBoxLayout newVertical
 				add: #topSpacerForInspectorLabel withConstraints: [:cstr | cstr height: 10];
-				add: (SpecBoxLayout newHorizontal
+				add: (SpBoxLayout newHorizontal
 					add: #leftSpacerForInspectorLabel;
 					add: #inspectorLabel withConstraints: [:cstr | cstr expand: false];
 					add: #rightSpacerForInspectorLabel;
@@ -88,9 +88,9 @@ PowerAssertPresenter >> initializeWidgets [
 	inspector := StInspector on: (StInspectorModel on: nil).
 	
 	inspectorLabel := self newLabel label: 'Inspector'; emphasis: #bold.
-	leftSpacerForInspectorLabel := SpacerPresenter new.
-	rightSpacerForInspectorLabel := SpacerPresenter new.
-	topSpacerForInspectorLabel := SpacerPresenter new.
+	leftSpacerForInspectorLabel := SpSpacerPresenter new.
+	rightSpacerForInspectorLabel := SpSpacerPresenter new.
+	topSpacerForInspectorLabel := SpSpacerPresenter new.
 
 	expressionViewer := self newText
 		text: executedBlock sourceNode formattedCode;
@@ -99,10 +99,10 @@ PowerAssertPresenter >> initializeWidgets [
 	expressionEvaluationResult := self newTable
 		beSingleSelection;
 		beResizable;
-		addColumn: ((IndexTableColumn title: 'Eval Order') width: 70);
-		addColumn: (StringTableColumn title: 'AST Node' evaluated: [:obj | obj at: 1]);
-		addColumn: (StringTableColumn title: 'Value' evaluated: [:obj | obj at: 2]);
-		addColumn: (CheckBoxTableColumn title: 'replay' evaluated: [:obj | obj at: 3]);
+		addColumn: ((SpIndexTableColumn title: 'Eval Order') width: 70);
+		addColumn: (SpStringTableColumn title: 'AST Node' evaluated: [:obj | obj at: 1]);
+		addColumn: (SpStringTableColumn title: 'Value' evaluated: [:obj | obj at: 2]);
+		addColumn: (SpCheckBoxTableColumn title: 'replay' evaluated: [:obj | obj at: 3]);
 		items: evaluationData;
 		whenSelectionChangedDo: [:selection |
 				inspectorLabel label: 'Inspecting: ', (selection selectedItem at: 2) asString.
