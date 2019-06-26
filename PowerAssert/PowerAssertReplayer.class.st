@@ -3,7 +3,6 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'evaluatedBlock',
-		'debugSession',
 		'replayEvaluationData',
 		'stack',
 		'stepIntoButton',
@@ -11,14 +10,16 @@ Class {
 		'stepOverReplayButton',
 		'restartButton',
 		'codeViewer',
-		'currentNodeLabel',
-		'currentNodeViewer',
-		'inspectDebugSessionButton'
+		'scriptableDebugger',
+		'replayValueLabel',
+		'replayValueInspector',
+		'inspectSelfButton',
+		'inspectScriptableDebuggerButton'
 	],
 	#classVars : [
-		'DebugSession_',
 		'EvaluatedBlock',
-		'ReplayEvaluationData'
+		'ReplayEvaluationData',
+		'ScriptableDebugger_'
 	],
 	#category : #PowerAssert
 }
@@ -33,15 +34,16 @@ PowerAssertReplayer class >> defaultSpec [
 				add: #stepOverButton;
 				add: #stepOverReplayButton;
 				add: #restartButton;
-				add: #inspectDebugSessionButton;
+				add: #inspectScriptableDebuggerButton;
+				add: #inspectSelfButton;
 				yourself)
 				withConstraints: [:cstr | cstr height: 25];
-			add: (SpBoxLayout newHorizontal
-				add: #currentNodeLabel;
-				add: #currentNodeViewer;
-				yourself
-			) withConstraints: [ :cstr | cstr height: 55 ];
 			add: #codeViewer;
+			add: (SpBoxLayout newHorizontal
+				add: #replayValueLabel withConstraints: [:cstr | cstr width: 100];
+				add: #replayValueInspector;
+				yourself
+			) withConstraints: [ :cstr | cstr height: 200 ];
 			"add: #variableInspector;"
 			yourself
 ]
@@ -52,19 +54,30 @@ PowerAssertReplayer class >> openOnBlock: aBlock withReplayEvaluationData: aColl
 	process := aBlock newProcess.
 	EvaluatedBlock := aBlock.
 	ReplayEvaluationData := aCollection.
-	DebugSession_ := DebugSession named: 'PowerAssertReplayerDebugSession' on: process startedAt: process suspendedContext.
+	ScriptableDebugger_ := ScriptableDebugger debug: aBlock.
 	presenter := self new openWithSpec.
 	presenter window extent: 600@600.
 ]
 
-{ #category : #accessing }
-PowerAssertReplayer >> debugSession [
-	^ debugSession
+{ #category : #'as yet unclassified' }
+PowerAssertReplayer >> canReplay [
+	^ (replayEvaluationData collect: [ :item | item at: 1 ]) identityIncludes: scriptableDebugger currentNode. 
 ]
 
-{ #category : #accessing }
-PowerAssertReplayer >> debugSession: anObject [
-	debugSession := anObject
+{ #category : #'as yet unclassified' }
+PowerAssertReplayer >> emphasisColour [
+		^ UITheme current caretColor.
+]
+
+{ #category : #'as yet unclassified' }
+PowerAssertReplayer >> emphasize: aString from: start to: stop [
+	| leftPart rightPart middleAndRightPart middlePart |
+	leftPart := (aString first: start - 1) asText.
+	rightPart := (aString last: aString size - stop) asText.
+	middleAndRightPart := aString last: aString size - start + 1.
+	middlePart := (middleAndRightPart first: stop - start + 1) asText.
+	middlePart := middlePart makeAllColor: self emphasisColour; addAttribute: TextEmphasis underlined from: 1 to: middlePart size.
+	^ leftPart, middlePart, rightPart
 ]
 
 { #category : #accessing }
@@ -81,53 +94,54 @@ PowerAssertReplayer >> evaluatedBlock: anObject [
 PowerAssertReplayer >> initializeWidgets [
 	evaluatedBlock := EvaluatedBlock.
 	replayEvaluationData := ReplayEvaluationData.
-	debugSession := DebugSession_.
+	scriptableDebugger := ScriptableDebugger_.
 	
-	currentNodeLabel := self newLabel
-		label: 'CurrentNode:';
+	replayValueLabel := self newLabel
+		label: 'Replay value:';
 		yourself.
-	currentNodeViewer := self newText
-		enabled: false;
-		yourself.
+	replayValueInspector := StInspector on: (StInspectorModel on: nil).
 	
 	stepIntoButton := self newButton
 		label: 'Into';
 		action: [ 
-			debugSession stepInto.
-			self updateForNewContext: debugSession interruptedContext.
+			scriptableDebugger step.
+			self updateForNewContext: scriptableDebugger context.
 		];
 		yourself.
 	stepOverButton := self newButton
 		label: 'Over';
 		action: [ 
-			debugSession stepOver.
-			self updateForNewContext: debugSession interruptedContext.
+			scriptableDebugger stepOver.
+			self updateForNewContext: scriptableDebugger context.
 		];
 		yourself.
 	stepOverReplayButton := self newButton
 		label: 'Over (Replay)';
 		action: [ 
-			debugSession stepOver.
-			self updateForNewContext: debugSession interruptedContext.
+			scriptableDebugger stepOver.
+			self updateForNewContext: scriptableDebugger context.
 			UIManager default notify: 'ToDo'.
 		];
 		yourself.
 	restartButton  := self newButton
 		label: 'Restart';
 		action: [ 
-			debugSession restart.
-			self updateForNewContext: debugSession interruptedContext.
+			self restart.
+			self updateForNewContext: scriptableDebugger context.
 		];
 		yourself.
-	inspectDebugSessionButton := self newButton
-		label: 'Inspect DebugSession';
-		action: [ debugSession inspect ].
+	inspectScriptableDebuggerButton := self newButton
+		label: 'Inspect Scriptable Debugger';
+		action: [ scriptableDebugger inspect ].
+	inspectSelfButton := self newButton
+		label: 'Inspect Self';
+		action: [ self inspect ].
 	"codeViewer := self newCode
 		yourself."
 	codeViewer := self newText
 		yourself.
 	stack := self newTable
-		items: debugSession stack;
+		items: scriptableDebugger stack;
 		beSingleSelection;
 		whenSelectionChangedDo: [ :newSelection |
 			self updateForNewContext: newSelection selectedItem.
@@ -146,6 +160,28 @@ PowerAssertReplayer >> replayEvaluationData: anObject [
 	replayEvaluationData := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+PowerAssertReplayer >> replayValue [
+	| index |
+	index := (replayEvaluationData collect: [ :item | item at: 1 ]) identityIndexOf: scriptableDebugger currentNode.
+	^ (replayEvaluationData at: index) at: 2.
+]
+
+{ #category : #initialization }
+PowerAssertReplayer >> restart [
+	scriptableDebugger := ScriptableDebugger debug: evaluatedBlock.
+]
+
+{ #category : #accessing }
+PowerAssertReplayer >> scriptableDebugger [
+	^ scriptableDebugger
+]
+
+{ #category : #accessing }
+PowerAssertReplayer >> scriptableDebugger: aValue [
+	scriptableDebugger := aValue
+]
+
 { #category : #initialization }
 PowerAssertReplayer >> title [
 	^ 'PowerAssert Replayer'
@@ -153,8 +189,15 @@ PowerAssertReplayer >> title [
 
 { #category : #'as yet unclassified' }
 PowerAssertReplayer >> updateForNewContext: aContext [
-	codeViewer text: aContext method sourceCode asText.
-	currentNodeViewer text: ((debugSession interruptedContext method sourceNodeForPC: debugSession interruptedContext pc) sourceCode).
-	stack items: debugSession stack.
+	codeViewer text: ''. "To force a refresh"
+	codeViewer text: (self emphasize: aContext method sourceCode from: scriptableDebugger currentNode start to: scriptableDebugger currentNode stop).
+	replayValueInspector model inspectedObject: nil.
+	self canReplay ifTrue: [ 
+		replayValueInspector model inspectedObject: self replayValue.
+		replayValueInspector refresh.
+		replayValueInspector initialize.
+	 ].
+	stack items: scriptableDebugger stack.
 	stack selectIndex: 1.
+	stepOverReplayButton enabled: self canReplay.
 ]

@@ -37,7 +37,7 @@ PowerAssertPresenter class >> defaultSpec [
 				add: #expressionEvaluationResult;
 				yourself);
 			add: (SpBoxLayout newVertical
-				add: #replayButton;
+				add: #replayButton withConstraints: [:cstr | cstr height:25];
 				add: #topSpacerForInspectorLabel withConstraints: [:cstr | cstr height: 10];
 				add: (SpBoxLayout newHorizontal
 					add: #leftSpacerForInspectorLabel;
