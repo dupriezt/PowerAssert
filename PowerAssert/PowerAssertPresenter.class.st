@@ -104,7 +104,7 @@ PowerAssertPresenter >> initializeWidgets [
 		addColumn: ((SpIndexTableColumn title: 'Eval Order') width: 70);
 		addColumn: (SpStringTableColumn title: 'AST Node' evaluated: [:obj | obj at: 1]);
 		addColumn: (SpStringTableColumn title: 'Value' evaluated: [:obj | obj at: 2]);
-		addColumn: (SpCheckBoxTableColumn title: 'replay' evaluated: [:obj | obj at: 3]);
+"		addColumn: (SpCheckBoxTableColumn title: 'replay' evaluated: [:obj | obj at: 3]);"
 		items: evaluationData;
 		whenSelectionChangedDo: [:selection |
 				inspectorLabel label: 'Inspecting: ', (selection selectedItem at: 2) asString.

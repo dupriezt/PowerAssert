@@ -14,7 +14,9 @@ Class {
 		'replayValueLabel',
 		'replayValueInspector',
 		'inspectSelfButton',
-		'inspectScriptableDebuggerButton'
+		'inspectScriptableDebuggerButton',
+		'operandStackLabel',
+		'operandStack'
 	],
 	#classVars : [
 		'EvaluatedBlock',
@@ -40,8 +42,16 @@ PowerAssertReplayer class >> defaultSpec [
 				withConstraints: [:cstr | cstr height: 25];
 			add: #codeViewer;
 			add: (SpBoxLayout newHorizontal
-				add: #replayValueLabel withConstraints: [:cstr | cstr width: 100];
-				add: #replayValueInspector;
+				add: (SpBoxLayout newVertical
+					add: #operandStackLabel withConstraints: [:cstr | cstr height: 25];
+					add: #operandStack;
+					yourself
+				);
+				add: (SpBoxLayout newVertical
+					add: #replayValueLabel withConstraints: [:cstr | cstr height: 25];
+					add: #replayValueInspector;
+					yourself
+				);
 				yourself
 			) withConstraints: [ :cstr | cstr height: 200 ];
 			"add: #variableInspector;"
@@ -96,6 +106,12 @@ PowerAssertReplayer >> initializeWidgets [
 	replayEvaluationData := ReplayEvaluationData.
 	scriptableDebugger := ScriptableDebugger_.
 	
+	operandStackLabel := self newLabel
+		label: 'Value Stack';
+		yourself.
+		
+	operandStack := self newList.
+	
 	replayValueLabel := self newLabel
 		label: 'Replay value:';
 		yourself.
@@ -118,9 +134,8 @@ PowerAssertReplayer >> initializeWidgets [
 	stepOverReplayButton := self newButton
 		label: 'Over (Replay)';
 		action: [ 
-			scriptableDebugger stepOver.
+			scriptableDebugger skipWith: self replayValue.
 			self updateForNewContext: scriptableDebugger context.
-			UIManager default notify: 'ToDo'.
 		];
 		yourself.
 	restartButton  := self newButton
@@ -148,6 +163,15 @@ PowerAssertReplayer >> initializeWidgets [
 		];
 		yourself.
 	stack selectIndex: 1.
+]
+
+{ #category : #'as yet unclassified' }
+PowerAssertReplayer >> operandListOfContext: aContext [
+	| list size |
+	list := OrderedCollection new.
+	size := aContext size.
+	1 to: size do: [ :i | list add: (aContext at: i) ].
+	^ list
 ]
 
 { #category : #accessing }
@@ -200,4 +224,5 @@ PowerAssertReplayer >> updateForNewContext: aContext [
 	stack items: scriptableDebugger stack.
 	stack selectIndex: 1.
 	stepOverReplayButton enabled: self canReplay.
+	operandStack items: (self operandListOfContext: aContext).
 ]
