@@ -52,7 +52,7 @@ When this test fails, the PowerAssert Visualiser window opens, showing the recor
 In particular, we see that the value of the random index was 1, so the first diisor was selected (0).
 ![image](https://user-images.githubusercontent.com/32486709/60267860-6de56f00-98eb-11e9-91ca-466b409df76d.png)
 
-To replay the buggy execution, click on the "Replay button". This opens a PowerAssert Replayer window.
+To replay the buggy execution, click on the *Replay* button. This opens a PowerAssert Replayer window.
 ![image](https://user-images.githubusercontent.com/32486709/60268056-d0d70600-98eb-11e9-84d1-92343656efa6.png)
 
 This window behaves like a debugger on a fresh execution of the assertion. From top to bottom, it contains:
