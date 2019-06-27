@@ -74,7 +74,7 @@ By clicking *Debug* and checking the value of the *unhandledException* variable,
 ### Example (continued)
 If you go back to the PowerAssert Replayer and click *Restart*, you can restart the assertion's execution. Note that this is in fact a fresh execution of the same assertion block, but with the same replay data.
 
-This time, if you press *over* instead of *Over (Replay)* on the `atRandom` message-send you will (likely, this is random after all!) get a different index (7 on the picture). If you keep stepping over, the execution will terminate normally instead of signalling an exception.
+This time, if you press *over* instead of *Over (Replay)* on the `atRandom` message-send you will (likely, this is random after all!) get a different index (7 on the picture). If you keep stepping over, the execution will terminate normally instead of signalling an exception.  
 ![image](https://user-images.githubusercontent.com/32486709/60269369-9f136e80-98ee-11e9-8499-f6b1d8222907.png)
 
 ### Current Limitations
