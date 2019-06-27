@@ -67,7 +67,7 @@ Right now, the current node is `divisorsOfSixty size`. This result of this messa
 Now, the current node is `divisorsOfSixty size atRandom`. This message-send is *not* deterministic. You can see in the replay value inspector that the recorded value for this message is 1. Click *Over (Replay)* to use the recorded value instead of executing this message-send.
 
 As you can see on the value stack, the top value (*i.e.* the result of the previous message-send) is indeed 1, the recorded value. If you continue to step over, you will get an exception.  
-![image](https://user-images.githubusercontent.com/32486709/60268849-a7b77500-98ed-11e9-8e3e-6f35d872da4f.png)
+![image](https://user-images.githubusercontent.com/32486709/60268849-a7b77500-98ed-11e9-8e3e-6f35d872da4f.png)  
 By clicking *Debug* and checking the value of the *unhandledException* variable, you can see that this exception is indeed the division by zero.  
 ![image](https://user-images.githubusercontent.com/32486709/60269097-185e9180-98ee-11e9-9eab-48f2f05e9f07.png)
 
