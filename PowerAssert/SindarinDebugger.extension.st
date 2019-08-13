@@ -12,6 +12,13 @@ SindarinDebugger >> debugAST: aBlock [
 ]
 
 { #category : #'*PowerAssert' }
+SindarinDebugger class >> debugAST: aBlock [
+	"Creates an execution of aBlock and returns an instance of ScriptableDebugger attached to this execution"
+	^ self new debugAST: aBlock
+
+]
+
+{ #category : #'*PowerAssert' }
 SindarinDebugger >> stepAST [
 	"Executes the next instruction. If the instruction is a message-send, step inside it."
 	"See DebugSessionPlus>>#stepAST:"
