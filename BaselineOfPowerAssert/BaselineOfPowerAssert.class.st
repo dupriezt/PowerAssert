@@ -12,7 +12,7 @@ BaselineOfPowerAssert >> baseline: spec [
 		do: [
 			"Dependencies"
 			spec
-				baseline: 'ScriptableDebugger'
+				baseline: 'Sindarin'
 				with: [spec repository: 'github://dupriezt/ScriptableDebugger'].
 			spec baseline: 'NewTools' with: [
 				spec
