@@ -11,9 +11,9 @@ BaselineOfPowerAssert >> baseline: spec [
 		for: #common
 		do: [
 			"Dependencies"
-			spec
+			"spec
 				baseline: 'Sindarin'
-				with: [spec repository: 'github://dupriezt/ScriptableDebugger'].
+				with: [spec repository: 'github://dupriezt/ScriptableDebugger']."
 			spec baseline: 'NewTools' with: [
 				spec
 					repository: 'github://pharo-spec/NewTools/tree/master/src'.
