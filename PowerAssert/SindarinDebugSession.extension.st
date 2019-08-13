@@ -1,12 +1,12 @@
-Extension { #name : #DebugSessionPlus }
+Extension { #name : #SindarinDebugSession }
 
 { #category : #'*PowerAssert' }
-DebugSessionPlus >> stepAST [
+SindarinDebugSession >> stepAST [
 	self stepAST: interruptedContext.
 ]
 
 { #category : #'*PowerAssert' }
-DebugSessionPlus >> stepAST: aContext [
+SindarinDebugSession >> stepAST: aContext [
 	"Like a stepInto, but instead of stepping until an 'interesting' bytecode is reached, it steps until the current ast node is different."
 	| currentNode |
 	"Should not step more a process that is terminating, otherwise the image will get locked."
@@ -24,12 +24,12 @@ DebugSessionPlus >> stepAST: aContext [
 ]
 
 { #category : #'*PowerAssert' }
-DebugSessionPlus >> stepOverAST [
+SindarinDebugSession >> stepOverAST [
 	self stepOverAST: interruptedContext.
 ]
 
 { #category : #'*PowerAssert' }
-DebugSessionPlus >> stepOverAST: aContext [
+SindarinDebugSession >> stepOverAST: aContext [
 	"Same as step over, but instead of then stepping to the next interesting bytecode, step until the current ast node is different."
 	| newContext astNodeGetter previousASTNode |
 

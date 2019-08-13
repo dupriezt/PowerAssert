@@ -59,7 +59,7 @@ PowerAsserter >> initialize [
 { #category : #recordingMethods }
 PowerAsserter >> recordEvaluationOf_componentApproach: aBlock [
 	| dbg evaluationData_ blockNode stkSz argAsts blockValue |
-	dbg := ScriptableDebugger debug: aBlock.
+	dbg := SindarinDebugger debug: aBlock.
 	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
 
@@ -90,7 +90,7 @@ PowerAsserter >> recordEvaluationOf_componentApproach: aBlock [
 { #category : #recordingMethods }
 PowerAsserter >> recordEvaluationOf_stepOver: aBlock [
 	| dbg evaluationData_ blockNode node |
-	dbg := ScriptableDebugger debug: aBlock.
+	dbg := SindarinDebugger debug: aBlock.
 	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
 
@@ -109,7 +109,7 @@ PowerAsserter >> recordEvaluationOf_stepOver: aBlock [
 { #category : #recordingMethods }
 PowerAsserter >> recordEvaluationOf_stepOverAST: aBlock [
 	| dbg evaluationData_ blockNode node blockContext |
-	dbg := ScriptableDebugger debugAST: aBlock.
+	dbg := SindarinDebugger debugAST: aBlock.
 	evaluationData_ := OrderedCollection new.
 	blockNode := dbg context closure sourceNode.
 	blockContext:= dbg context.

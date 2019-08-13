@@ -10,7 +10,7 @@ Object >> powerAssert: aBlock [
 Object >> powerAssert: aBlock testMode: aBoolean [
 	<debuggerCompleteToSender>
 	| dbg startContext stkSz argAsts blockNode evalList blockValue testResult |
-	dbg := ScriptableDebugger debug: aBlock.
+	dbg := SindarinDebugger debug: aBlock.
 	startContext := dbg context.
 	blockNode := startContext closure sourceNode.
 	evalList := OrderedCollection new.

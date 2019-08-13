@@ -64,7 +64,7 @@ PowerAssertReplayer class >> openOnBlock: aBlock withReplayEvaluationData: aColl
 	process := aBlock newProcess.
 	EvaluatedBlock := aBlock.
 	ReplayEvaluationData := aCollection.
-	ScriptableDebugger_ := ScriptableDebugger debug: aBlock.
+	ScriptableDebugger_ := SindarinDebugger debug: aBlock.
 	presenter := self new openWithSpec.
 	presenter window extent: 600@600.
 ]
@@ -193,7 +193,7 @@ PowerAssertReplayer >> replayValue [
 
 { #category : #initialization }
 PowerAssertReplayer >> restart [
-	scriptableDebugger := ScriptableDebugger debug: evaluatedBlock.
+	scriptableDebugger := SindarinDebugger debug: evaluatedBlock.
 ]
 
 { #category : #accessing }
