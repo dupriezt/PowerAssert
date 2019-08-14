@@ -1,5 +1,13 @@
 # PowerAssert
 
+## Installation
+```Smalltalk
+Metacello new
+    baseline: 'PowerAssert';
+    repository: 'github://dupriezt/PowerAssert';
+    load.
+```
+
 ## Demonstration
 Run the following test (available on the PowerAssertExamples class):
 ```Smalltalk
@@ -23,14 +31,6 @@ It features:
 
 ![image](https://user-images.githubusercontent.com/32486709/59906941-328a0280-940a-11e9-9aec-345d55fc0273.png)
 
-
-## Installation
-```Smalltalk
-Metacello new
-    baseline: 'PowerAssert';
-    repository: 'github://dupriezt/PowerAssert';
-    load.
-```
 
 ## Restrictions and Notes
 - Some compilation optimisations throw off powerassert, giving strange results. For example, the `Number>>#to:do:` method (it is inlined by the compiler).
